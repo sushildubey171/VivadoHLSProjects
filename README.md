@@ -32,8 +32,8 @@ Testing on a Mac or Linux system:
 
 Vivado HLS Instructions:
 
- Open a Vivado HLS from the project directory
- Create a new project
- Set your project up using the files
-    Make sure you add the core algorithm and testbench
-    Simulate and synthesize away
+ - Open a Vivado HLS from the project directory
+ - Create a new project
+ - Set your project up using the files
+    - Make sure you add the core algorithm and testbench
+    - Simulate and synthesize away
