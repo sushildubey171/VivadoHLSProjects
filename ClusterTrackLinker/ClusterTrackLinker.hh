@@ -20,12 +20,12 @@ bool getClusterTrackLinker(uint16_t smallClusterET[NCaloLayer1Eta][NCaloLayer1Ph
 			   uint16_t trackPT[MaxTracksInCard],
 			   uint16_t trackEta[MaxTracksInCard],
 			   uint16_t trackPhi[MaxTracksInCard], 
-			   uint16_t *linkedTrackPT,
-			   uint16_t *linkedTrackEta,
-			   uint16_t *linkedTrackPhi,
-			   uint16_t *linkedTrackQuality,
-			   uint16_t *neutralClusterET,
-			   uint16_t *neutralClusterEta,
-			   uint16_t *neutralClusterPhi);
+			   uint16_t linkedTrackPT[MaxTracksInCard],
+			   uint16_t linkedTrackEta[MaxTracksInCard],
+			   uint16_t linkedTrackPhi[MaxTracksInCard],
+			   uint16_t linkedTrackQuality[MaxTracksInCard],
+			   uint16_t neutralClusterET[MaxNeutralClusters],
+			   uint16_t neutralClusterEta[MaxNeutralClusters],
+			   uint16_t neutralClusterPhi[MaxNeutralClusters]);
 
 #endif

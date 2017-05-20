@@ -116,10 +116,12 @@ int main(int argc, char **argv) {
   uint16_t neutralClusterET[MaxNeutralClusters] = {0};
   uint16_t neutralClusterEta[MaxNeutralClusters] = {0};
   uint16_t neutralClusterPhi[MaxNeutralClusters] = {0};
+
   if(getClusterTrackLinker(smallClusterET, peakEta, peakPhi, 
 			   trackPT, trackEta, trackPhi, 
 			   linkedTrackPT, linkedTrackEta, linkedTrackPhi, linkedTrackQuality,
 			   neutralClusterET, neutralClusterEta, neutralClusterPhi)) {
+
     cout << "From the cluster-track linking simulation: " << endl;
 
     cout << "LinkedTracks: " << endl;
@@ -138,9 +140,9 @@ int main(int argc, char **argv) {
     cout << "clusterEta\tclusterPhi\tclusterET" << endl;
     for(int cluster = 0; cluster < MaxNeutralClusters; cluster++) {
       if(neutralClusterET[cluster] > 0) {
-	cout << neutralClusterEta
-	     << "\t" << neutralClusterPhi
-	     << "\t" << neutralClusterET
+	cout << neutralClusterEta[cluster]
+	     << "\t" << neutralClusterPhi[cluster]
+	     << "\t" << neutralClusterET[cluster]
 	     << endl;
       }
     }

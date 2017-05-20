@@ -2,18 +2,18 @@
 #include "ClusterTrackLinker.hh"
 
 bool getClusterTrackLinker(uint16_t clusterET[NCaloLayer1Eta][NCaloLayer1Phi],
-                           uint16_t peakEta[NCaloLayer1Eta][NCaloLayer1Phi], 
-                           uint16_t peakPhi[NCaloLayer1Eta][NCaloLayer1Phi], 
-                           uint16_t trackPT[MaxTracksInCard],
-                           uint16_t trackEta[MaxTracksInCard],
-                           uint16_t trackPhi[MaxTracksInCard], 
-                           uint16_t *linkedTrackPT,
-                           uint16_t *linkedTrackEta,
-                           uint16_t *linkedTrackPhi,
-                           uint16_t *linkedTrackQuality,
-                           uint16_t *neutralClusterET,
-                           uint16_t *neutralClusterEta,
-                           uint16_t *neutralClusterPhi) {
+			   uint16_t peakEta[NCaloLayer1Eta][NCaloLayer1Phi], 
+			   uint16_t peakPhi[NCaloLayer1Eta][NCaloLayer1Phi], 
+			   uint16_t trackPT[MaxTracksInCard],
+			   uint16_t trackEta[MaxTracksInCard],
+			   uint16_t trackPhi[MaxTracksInCard],
+			   uint16_t linkedTrackPT[MaxTracksInCard],
+			   uint16_t linkedTrackEta[MaxTracksInCard],
+			   uint16_t linkedTrackPhi[MaxTracksInCard],
+			   uint16_t linkedTrackQuality[MaxTracksInCard],
+			   uint16_t neutralClusterET[MaxNeutralClusters],
+			   uint16_t neutralClusterEta[MaxNeutralClusters],
+			   uint16_t neutralClusterPhi[MaxNeutralClusters]) {
   uint16_t clusterEta[MaxNeutralClusters];
   uint16_t clusterPhi[MaxNeutralClusters];
   for(int tEta = 0; tEta < NCaloLayer1Eta; tEta++) {
@@ -21,8 +21,8 @@ bool getClusterTrackLinker(uint16_t clusterET[NCaloLayer1Eta][NCaloLayer1Phi],
       int cluster = tEta * NCaloLayer1Phi + tPhi;
       // Convert cruder calorimeter position to track LSB
       // This can be a LUT - perhaps HLS will take care of this efficiently
-      clusterEta[cluster] = peakEta[tEta][tPhi] * MaxTrackEta / NCrystalsInEta;
-      clusterPhi[cluster] = peakPhi[tEta][tPhi] * MaxTrackPhi / NCrystalsInPhi;
+      clusterEta[cluster] = (tEta * NCrystalsPerEtaPhi + peakEta[tEta][tPhi]) * MaxTrackEta / NCrystalsInEta;
+      clusterPhi[cluster] = (tPhi * NCrystalsPerEtaPhi + peakPhi[tEta][tPhi]) * MaxTrackPhi / NCrystalsInPhi;
       // Initialize neutral clusters
       neutralClusterET[cluster] = clusterET[tEta][tPhi];
       neutralClusterEta[cluster] = clusterEta[cluster];
