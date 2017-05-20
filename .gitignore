@@ -1,0 +1,13 @@
+.*
+*.zip
+*.gz
+*.log
+*.out
+*.txt
+*.html
+*.app
+solution*
+UCTSummaryCard*
+testClusterFinder
+testClusterTrackLinker
+TestMakeHT
