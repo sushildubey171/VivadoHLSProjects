@@ -12,17 +12,23 @@ ClusterTrackLinker is the core of Phase-2 L1TPFPLayer1
 
 Testing on a Mac or Linux system:
 
+```bash
  cd HT
  cc -o TestMakeHT *.c
  ./TestMakeHT
+```
 
+```bash
  cd ClusterFinder
  c++ -o testClusterFinder *.cc
  ./testClusterFinder
+```
 
+```bash
  cd ClusterTrackLinker
  c++ -o testClusterTrackLinker *.cc
  ./testClusterTrackLinker
+```
 
 Vivado HLS Instructions:
 

@@ -14,10 +14,28 @@ bool getClusterTrackLinker(uint16_t clusterET[NCaloLayer1Eta][NCaloLayer1Phi],
 			   uint16_t neutralClusterET[MaxNeutralClusters],
 			   uint16_t neutralClusterEta[MaxNeutralClusters],
 			   uint16_t neutralClusterPhi[MaxNeutralClusters]) {
+#pragma HLS PIPELINE II=6
+#pragma HLS ARRAY_PARTITION variable=clusterET complete dim=0
+#pragma HLS ARRAY_PARTITION variable=peakEta complete dim=0
+#pragma HLS ARRAY_PARTITION variable=peakPhi complete dim=0
+#pragma HLS ARRAY_PARTITION variable=trackPT complete dim=0
+#pragma HLS ARRAY_PARTITION variable=trackEta complete dim=0
+#pragma HLS ARRAY_PARTITION variable=trackPhi complete dim=0
+#pragma HLS ARRAY_PARTITION variable=linkedTrackPT complete dim=0
+#pragma HLS ARRAY_PARTITION variable=linkedTrackEta complete dim=0
+#pragma HLS ARRAY_PARTITION variable=linkedTrackPhi complete dim=0
+#pragma HLS ARRAY_PARTITION variable=linkedTrackQuality complete dim=0
+#pragma HLS ARRAY_PARTITION variable=neutralClusterET complete dim=0
+#pragma HLS ARRAY_PARTITION variable=neutralClusterEta complete dim=0
+#pragma HLS ARRAY_PARTITION variable=neutralClusterPhi complete dim=0
   uint16_t clusterEta[MaxNeutralClusters];
   uint16_t clusterPhi[MaxNeutralClusters];
+#pragma HLS ARRAY_PARTITION variable=clusterEta complete dim=0
+#pragma HLS ARRAY_PARTITION variable=clusterPhi complete dim=0
   for(int tEta = 0; tEta < NCaloLayer1Eta; tEta++) {
+#pragma HLS UNROLL
     for(int tPhi = 0; tPhi < NCaloLayer1Phi; tPhi++) {
+#pragma HLS UNROLL
       int cluster = tEta * NCaloLayer1Phi + tPhi;
       // Convert cruder calorimeter position to track LSB
       // This can be a LUT - perhaps HLS will take care of this efficiently
@@ -31,12 +49,14 @@ bool getClusterTrackLinker(uint16_t clusterET[NCaloLayer1Eta][NCaloLayer1Phi],
   }
   // Double loop over tracks and clusters for linking
   for(int track = 0; track < MaxTracksInCard; track++) {
+#pragma HLS UNROLL
     linkedTrackPT[track] = trackPT[track];
     linkedTrackEta[track] = trackEta[track];
     linkedTrackPhi[track] = trackPhi[track];
     linkedTrackQuality[track] = 0;
     uint8_t nMatches = 0;
     for(int cluster = 0; cluster < MaxNeutralClusters; cluster++) {
+#pragma HLS UNROLL
       uint16_t diffEta = clusterEta[cluster] - trackEta[track];
       if(diffEta >= MaxTrackEta) diffEta = trackEta[track] - clusterEta[cluster];
       uint16_t diffPhi = clusterPhi[cluster] - trackPhi[track];
