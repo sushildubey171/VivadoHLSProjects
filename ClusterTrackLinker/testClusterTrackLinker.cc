@@ -39,6 +39,8 @@ int poisson(double mean) {
 
 int main(int argc, char **argv) {
 
+  if(argc == 2) srandom((unsigned int) atoi(argv[1]));
+
   uint16_t crystals[NCaloLayer1Eta][NCaloLayer1Phi][NCrystalsPerEtaPhi][NCrystalsPerEtaPhi];
   for(int tEta = 0; tEta < NCaloLayer1Eta; tEta++) {
     for(int tPhi = 0; tPhi < NCaloLayer1Phi; tPhi++) {
