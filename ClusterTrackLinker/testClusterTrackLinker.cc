@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
   // Get a random number of objects and tracks, but within hardware constraints
 
   int nObjects = max(poisson(50), int(MaxNeutralClusters));
-  int nTracks = max(poisson(20), int(MaxTracksInCard));
+  int nTracks = max(poisson(15), int(MaxTracksInCard));
   if(nTracks > nObjects) nTracks = nObjects;
 
   double totalET = 0;

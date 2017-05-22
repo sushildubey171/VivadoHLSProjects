@@ -11,7 +11,7 @@ const uint16_t MaxTrackEta = int(1.479 / 0.0005);
 // Barrel calorimeter eta phi coverage is measured with LSB = 0.0001 - making it up :)
 const uint16_t MaxTrackPhi = int(2. * 3.1415927 / 0.0001);
 
-const uint16_t MaxTracksInCard = 30;
+const uint16_t MaxTracksInCard = 20;
 const uint16_t MaxNeutralClusters = NCaloLayer1Eta * NCaloLayer1Phi;
 
 bool getClusterTrackLinker(uint16_t smallClusterET[NCaloLayer1Eta][NCaloLayer1Phi],
