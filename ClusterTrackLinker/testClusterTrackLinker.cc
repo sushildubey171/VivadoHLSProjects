@@ -1,8 +1,41 @@
 #include "ClusterFinder.hh"
 #include "ClusterTrackLinker.hh"
 
+#include <stdlib.h>
+#include <math.h>
+
 #include <iostream>
+#include <algorithm>
 using namespace std;
+
+double flat(double range) {
+  long int r = random();
+  double rDouble = r;
+  double rMax = RAND_MAX;
+  double flat = range * r / rMax;
+  return flat;
+}
+
+int poisson(double mean) {
+  static double oldMean = -1;
+  static double g;
+  if(mean != oldMean) {
+    oldMean = mean;
+    if(mean == 0) {
+      g = 0;
+    }
+    else {
+      g = exp(-mean);
+    }
+  }    
+  double em = -1;
+  double t = 1;
+  do {
+    em++;
+    t *= flat(1.);
+  } while(t > g);
+  return em;
+}
 
 int main(int argc, char **argv) {
 
@@ -16,27 +49,35 @@ int main(int argc, char **argv) {
       }
     }
   }
+  uint16_t trackPT[MaxTracksInCard] = {0};
+  uint16_t trackEta[MaxTracksInCard] = {0};
+  uint16_t trackPhi[MaxTracksInCard] = {0};
+  for(int track = 0; track < MaxTracksInCard; track++) {
+    trackPT[track] = 0;
+  }
 
-  double objects[10] = {11, 22, 33, 44, 55, 66, 77, 88, 99, 111};
+  // Get a random number of objects and tracks, but within hardware constraints
+
+  int nObjects = max(poisson(50), int(MaxNeutralClusters));
+  int nTracks = max(poisson(20), int(MaxTracksInCard));
+  if(nTracks > nObjects) nTracks = nObjects;
+
   double totalET = 0;
-  uint16_t trackPT[5] = {0};  // With LSB = 0.1
-  uint16_t trackEta[5] = {0}; // With LSB = 0.0005 (only positive and < 1.479)
-  uint16_t trackPhi[5] = {0}; // With LSB = 0.0001 (only positive and < 2Pi)
   cout << "Generated objects: " << endl;
   cout << "tEta\ttPhi\tcEta\tcPhi\tobjectET" << endl;
-  for(int object = 0; object < 10; object++) {
+  for(int object = 0; object < nObjects; object++) {
     // Crude simulation of dispersal of object ET for fun around some location
-    int objectET = objects[object];
-    int tEta = objectET % NCaloLayer1Eta;
-    int tPhi = objectET % NCaloLayer1Phi;
-    int cEta = (tPhi * objectET) % NCrystalsPerEtaPhi;
-    int cPhi = (tEta * objectET) % NCrystalsPerEtaPhi;
+    double objectET = flat(1023.);
+    int tEta = flat(17.);
+    int tPhi = flat(4.);
+    int cEta = flat(5.);
+    int cPhi = flat(5.);
     // Print information
     cout << tEta
          << "\t" << tPhi
          << "\t" << cEta
          << "\t" << cPhi
-         << "\t" << objects[object] << endl;
+         << "\t" << objectET << endl;
     for(int dEta = -1; dEta <= 1; dEta++) {
       for(int dPhi = -1; dPhi <= 1; dPhi++) {
         int ncEta = cEta + dEta;
@@ -51,23 +92,22 @@ int main(int argc, char **argv) {
         else if(ncPhi > NCaloLayer1Phi) {ncPhi = 0; ntPhi = tPhi + 1;}
         // Ignore spill-overs outside the card, defering to next layer
         if(dEta == 0 && dPhi == 0) {
-          crystals[tEta][tPhi][cEta][cPhi] = (objects[object] * 0.9);
+          crystals[tEta][tPhi][cEta][cPhi] = (objectET * 0.9);
         }
         else {
           if(ntEta >= 0 && ntEta < NCaloLayer1Eta && ntPhi >= 0 && ntPhi < NCaloLayer1Phi)
-            crystals[ntEta][ntPhi][ncEta][ncPhi] = (objects[object] * 0.1 / 8.);
+            crystals[ntEta][ntPhi][ncEta][ncPhi] = (objectET * 0.1 / 8.);
         }
       }
     }
-    totalET += objects[object];
-    // Set matching track parameters for half the clusters
-    if((object % 2) == 0) {
-      double pt = objects[object];
+    totalET += objectET;
+    // Set matching track parameters for nTracks chosen
+    if(object < nTracks) {
       double phi = (tPhi * NCrystalsPerEtaPhi + cPhi) * (0.087 / NCrystalsPerEtaPhi);
       // PT is measured with LSB = 1 GeV
-      trackPT[object / 2] = int(pt);
-      trackEta[object / 2] = (tEta * NCrystalsPerEtaPhi + cEta) * MaxTrackEta / NCrystalsInEta;
-      trackPhi[object / 2] = (tPhi * NCrystalsPerEtaPhi + cPhi) * MaxTrackPhi / NCrystalsInPhi;
+      trackPT[object] = int(objectET);
+      trackEta[object] = (tEta * NCrystalsPerEtaPhi + cEta) * MaxTrackEta / NCrystalsInEta;
+      trackPhi[object] = (tPhi * NCrystalsPerEtaPhi + cPhi) * MaxTrackPhi / NCrystalsInPhi;
     }
   }
   cout << "Total generated ET = " << totalET << endl;
