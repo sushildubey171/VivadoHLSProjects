@@ -1,7 +1,7 @@
 #include "ClusterFinder.hh"
 
 uint16_t getPeakBinOf5(uint16_t et[5], uint16_t etSum) {
-#pragma HLS PIPELINE II=6
+#pragma HLS PIPELINE II=8
 #pragma HLS ARRAY_PARTITION variable=et complete dim=0
   uint16_t iEtSum = 
     (et[0] >> 1)                +  // 0.5xet[0]
@@ -23,7 +23,7 @@ bool getClustersInTower(uint16_t crystals[NCrystalsPerEtaPhi][NCrystalsPerEtaPhi
                         uint16_t *peakPhi,
                         uint16_t *towerET,
                         uint16_t *clusterET) {
-#pragma HLS PIPELINE II=6
+#pragma HLS PIPELINE II=8
 #pragma HLS ARRAY_PARTITION variable=crystals complete dim=0
   uint16_t phiStripSum[NCrystalsPerEtaPhi];
 #pragma HLS ARRAY_PARTITION variable=phiStripSum complete dim=0
@@ -120,7 +120,7 @@ bool getClustersInCard(uint16_t crystals[NCaloLayer1Eta][NCaloLayer1Phi][NCrysta
                        uint16_t peakPhi[NCaloLayer1Eta][NCaloLayer1Phi],
                        uint16_t towerET[NCaloLayer1Eta][NCaloLayer1Phi],
                        uint16_t clusterET[NCaloLayer1Eta][NCaloLayer1Phi]) {
-#pragma HLS PIPELINE II=6
+#pragma HLS PIPELINE II=8
 #pragma HLS ARRAY_PARTITION variable=crystals complete dim=0
 #pragma HLS ARRAY_PARTITION variable=peakEta complete dim=0
 #pragma HLS ARRAY_PARTITION variable=peakPhi complete dim=0

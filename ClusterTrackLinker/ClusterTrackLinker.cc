@@ -14,7 +14,7 @@ bool getClusterTrackLinker(uint16_t clusterET[NCaloLayer1Eta][NCaloLayer1Phi],
 			   uint16_t neutralClusterET[MaxNeutralClusters],
 			   uint16_t neutralClusterEta[MaxNeutralClusters],
 			   uint16_t neutralClusterPhi[MaxNeutralClusters]) {
-#pragma HLS PIPELINE II=6
+#pragma HLS PIPELINE II=8
 #pragma HLS ARRAY_PARTITION variable=clusterET complete dim=0
 #pragma HLS ARRAY_PARTITION variable=peakEta complete dim=0
 #pragma HLS ARRAY_PARTITION variable=peakPhi complete dim=0
