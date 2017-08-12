@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 	rgnETLUT[i][iRgn] = (int) 1.1 * (float) i;
       }
       else {
-	rgnETLUT[i][j] = i;
+	rgnETLUT[i][iRgn] = i;
       }
     }
     for(iHFRgn = 0; iHFRgn < NHFRgns; iHFRgn++) {
