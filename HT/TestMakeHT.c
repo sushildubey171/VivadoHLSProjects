@@ -56,61 +56,74 @@ void WriteLinkMapHT(uint16_t rgnET[NCrts*NCrds*NRgns], uint16_t hfET[NCrts*NHFRg
 }
 
 int main(int argc, char **argv) {
-	uint16_t rgnET[NCrts*NCrds*NRgns];
-	uint16_t hfET[NCrts*NHFRgns];
 
-	// Test data; Construct it using indices for the fun of it
+  uint16_t rgnET[NCrts*NCrds*NRgns];
+  uint16_t hfET[NCrts*NHFRgns];
+  uint16_t et;
+  uint16_t HT;
+  uint16_t hlsHT[1] = {0};
 
-	int iCrt;
-	int iCrd;
-	int iRgn;
-	int i;
-	int iHFRgn;
-	for(iCrt = 0; iCrt < NCrts; iCrt++) {
-		for(iCrd = 0; iCrd < NCrds; iCrd++) {
-			for(iRgn = 0; iRgn < NRgns; iRgn++) {
-				i = iCrt * NCrds * NRgns + iCrd * NRgns + iRgn;
-				rgnET[i] = i;
-			}
-		}
-		for(iHFRgn = 0; iHFRgn < NHFRgns; iHFRgn++) {
-			i = iCrt * NHFRgns + iHFRgn;
-			hfET[i] = i;
-		}
-	}
+  int iCrt;
+  int iCrd;
+  int iRgn;
+  int i;
+  int j;
+  int iHFRgn;
 
-	// Determine HT using software
+  // Setup LUTs
 
-	uint16_t HT = 0;
-	for(iCrt = 0; iCrt < NCrts; iCrt++) {
-		for(iCrd = 0; iCrd < NCrds; iCrd++) {
-			for(iRgn = 0; iRgn < NRgns; iRgn++) {
-				i = iCrt * NCrds * NRgns + iCrd * NRgns + iRgn;
-				if(rgnET[i] > MinETCutForHT) HT += rgnET[i];
-			}
-		}
-		for(iHFRgn = 0; iHFRgn < NHFRgns; iHFRgn++) {
-			i = iCrt * NHFRgns + iHFRgn;
-			if(hfET[i] > MinHFETCutForHT) HT += hfET[i];
-		}
-	}
+  for(i = 0; i < 0x10000; i++) {
+    for(iRgn = 0; iRgn < NCrds * NRgns; iRgn++) {
+      if(iRgn < (NCrds * NRgns)/2) {
+	rgnETLUT[i][iRgn] = (int) 1.1 * (float) i;
+      }
+      else {
+	rgnETLUT[i][j] = i;
+      }
+    }
+    for(iHFRgn = 0; iHFRgn < NHFRgns; iHFRgn++) {
+      hfETLUT[i][iHFRgn] = (int) 1.3 * (float) i;
+    }
+  }
 
-	// Determine HT using hardware simulation
 
-	uint16_t hlsHT[1] = {0};
-	MakeHT(rgnET, hfET, hlsHT);
+  // Test data; Construct it using indices for the fun of it
+  
+  for(iRgn = 0; iRgn < NCrts * NCrds * NRgns; iRgn++) {
+    rgnET[iRgn] = iRgn;
+  }
+  for(iHFRgn = 0; iHFRgn < NHFRgns; iHFRgn++) {
+    hfET[iHFRgn] = iHFRgn;
+  }
 
-	// Compare
+  // Determine HT using software
 
-	printf("C says: HT = %d; HLS says: HT = %d\n", HT, hlsHT[0]);;
-	if(HT != hlsHT[0]) {
-		printf("Test failed\n");
-		return 1;
-	}
-	else printf("Test succeeded\n");
+  for(iRgn = 0; iRgn < NCrts * NCrds * NRgns; iRgn++) {
+    j = (iRgn % (NCrds*NRgns));
+    et = rgnETLUT[rgnET[iRgn]][j];
+    if(et > MinETCutForHT) HT += et;
+  }
+  for(iHFRgn = 0; iHFRgn < NCrts * NHFRgns; iHFRgn++) {
+    j = (iHFRgn % (NHFRgns));
+    et = hfETLUT[hfET[iHFRgn]][j];
+    if(et > MinHFETCutForHT) HT += et;
+  }
 
-	WriteLinkMapHT(rgnET, hfET, hlsHT);
+  // Determine HT using hardware simulation
 
-	return 0;
+  MakeHT(rgnET, hfET, hlsHT);
+
+  // Compare
+
+  printf("C says: HT = %d; HLS says: HT = %d\n", HT, hlsHT[0]);;
+  if(HT != hlsHT[0]) {
+    printf("Test failed\n");
+    return 1;
+  }
+  else printf("Test succeeded\n");
+
+  WriteLinkMapHT(rgnET, hfET, hlsHT);
+
+  return 0;
 
 }
