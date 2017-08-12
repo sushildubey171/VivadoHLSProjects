@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
   uint16_t rgnET[NCrts*NCrds*NRgns];
   uint16_t hfET[NCrts*NHFRgns];
   uint16_t et;
-  uint16_t HT;
+  uint16_t HT = 0;
   uint16_t hlsHT[1] = {0};
 
   int iCrt;
