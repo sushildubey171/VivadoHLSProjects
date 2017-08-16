@@ -10,9 +10,15 @@
 #define MinHFETCutForHT 10
 
 #include <stdint.h>
+#ifdef Vivado
+#include "ap_int.h"
+#define uint10_t ap_uint<10>
+#else
+#define uint10_t uint16_t
+#endif
 
 #include "LUTs.h"
 
-void MakeHT(uint16_t rgnET[NCrts*NCrds*NRgns], uint16_t hfET[NCrts*NHFRgns], uint16_t HT[1]);
+void MakeHT(uint10_t rgnET[NCrts*NCrds*NRgns], uint10_t hfET[NCrts*NHFRgns], uint10_t HT[1]);
 
 #endif

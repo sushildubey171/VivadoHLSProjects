@@ -3,7 +3,7 @@
 
 #include "MakeHT.h"
 
-void WriteLinkMapHT(uint16_t rgnET[NCrts*NCrds*NRgns], uint16_t hfET[NCrts*NHFRgns], uint16_t HT[1]) {
+void WriteLinkMapHT(uint10_t rgnET[NCrts*NCrds*NRgns], uint10_t hfET[NCrts*NHFRgns], uint10_t HT[1]) {
   // This code is to write suitable mapping of inputs to signals in the CTP7_HLS project from Ales
   // Block 1 of User Code
   int iRgn, iHFRgn, link, loBit, hiBit;
@@ -54,11 +54,11 @@ void WriteLinkMapHT(uint16_t rgnET[NCrts*NCrds*NRgns], uint16_t hfET[NCrts*NHFRg
 
 int main(int argc, char **argv) {
 
-  uint16_t rgnET[NCrts*NCrds*NRgns];
-  uint16_t hfET[NCrts*NHFRgns];
-  uint16_t et;
-  uint16_t HT[3] = {0, 0, 0};
-  uint16_t hlsHT[3] = {0, 0, 0};
+  uint10_t rgnET[NCrts*NCrds*NRgns];
+  uint10_t hfET[NCrts*NHFRgns];
+  uint10_t et;
+  uint10_t HT[3] = {0, 0, 0};
+  uint10_t hlsHT[3] = {0, 0, 0};
 
   uint32_t rgnHT = 0;
   uint32_t hfHT = 0;
@@ -96,9 +96,9 @@ int main(int argc, char **argv) {
   }
   sum = rgnHT + hfHT;
   if(sum > 0xFFFF) sum = 0xFFFF;
-  HT[0] = (uint16_t) sum;
-  HT[1] = (uint16_t) rgnHT;
-  HT[2] = (uint16_t) hfHT;
+  HT[0] = (uint10_t) sum;
+  HT[1] = (uint10_t) rgnHT;
+  HT[2] = (uint10_t) hfHT;
 
   // Determine HT using hardware simulation
 
