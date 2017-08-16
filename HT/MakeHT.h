@@ -11,8 +11,7 @@
 
 #include <stdint.h>
 
-uint16_t rgnETLUT[0x10000][NCrds*NRgns];
-uint16_t hfETLUT[0x10000][NHFRgns];
+#include "LUTs.h"
 
 void MakeHT(uint16_t rgnET[NCrts*NCrds*NRgns], uint16_t hfET[NCrts*NHFRgns], uint16_t HT[1]);
 

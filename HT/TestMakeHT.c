@@ -3,11 +3,6 @@
 
 #include "MakeHT.h"
 
-#define NCrts 18
-#define NCrds 7
-#define NRgns 2
-#define NHFRgns 8
-
 void WriteLinkMapHT(uint16_t rgnET[NCrts*NCrds*NRgns], uint16_t hfET[NCrts*NHFRgns], uint16_t HT[1]) {
   // This code is to write suitable mapping of inputs to signals in the CTP7_HLS project from Ales
   // Block 1 of User Code
@@ -53,6 +48,8 @@ void WriteLinkMapHT(uint16_t rgnET[NCrts*NCrds*NRgns], uint16_t hfET[NCrts*NHFRg
     printf("hfET_%d <= s_INPUT_LINK_ARR( %d )(%d downto %d);\n", iHFRgn, link, hiBit, loBit);
   }
   printf("s_OUTPUT_LINK_ARR( 0 )(15 downto 0) <= HT_0;\n");
+  printf("s_OUTPUT_LINK_ARR( 0 )(31 downto 16) <= HT_1;\n");
+  printf("s_OUTPUT_LINK_ARR( 0 )(47 downto 32) <= HT_2;\n");
 }
 
 int main(int argc, char **argv) {
@@ -60,8 +57,12 @@ int main(int argc, char **argv) {
   uint16_t rgnET[NCrts*NCrds*NRgns];
   uint16_t hfET[NCrts*NHFRgns];
   uint16_t et;
-  uint16_t HT = 0;
-  uint16_t hlsHT[1] = {0};
+  uint16_t HT[3] = {0, 0, 0};
+  uint16_t hlsHT[3] = {0, 0, 0};
+
+  uint32_t rgnHT = 0;
+  uint32_t hfHT = 0;
+  uint32_t sum = 0;
 
   int iCrt;
   int iCrd;
@@ -70,29 +71,12 @@ int main(int argc, char **argv) {
   int j;
   int iHFRgn;
 
-  // Setup LUTs
-
-  for(i = 0; i < 0x10000; i++) {
-    for(iRgn = 0; iRgn < NCrds * NRgns; iRgn++) {
-      if(iRgn < (NCrds * NRgns)/2) {
-	rgnETLUT[i][iRgn] = (int) 1.1 * (float) i;
-      }
-      else {
-	rgnETLUT[i][iRgn] = i;
-      }
-    }
-    for(iHFRgn = 0; iHFRgn < NHFRgns; iHFRgn++) {
-      hfETLUT[i][iHFRgn] = (int) 1.3 * (float) i;
-    }
-  }
-
-
   // Test data; Construct it using indices for the fun of it
   
   for(iRgn = 0; iRgn < NCrts * NCrds * NRgns; iRgn++) {
-    rgnET[iRgn] = iRgn;
+    rgnET[iRgn] = iRgn / 2;
   }
-  for(iHFRgn = 0; iHFRgn < NHFRgns; iHFRgn++) {
+  for(iHFRgn = 0; iHFRgn < NCrts * NHFRgns; iHFRgn++) {
     hfET[iHFRgn] = iHFRgn;
   }
 
@@ -101,13 +85,20 @@ int main(int argc, char **argv) {
   for(iRgn = 0; iRgn < NCrts * NCrds * NRgns; iRgn++) {
     j = (iRgn % (NCrds*NRgns));
     et = rgnETLUT[rgnET[iRgn]][j];
-    if(et > MinETCutForHT) HT += et;
+    if(et > MinETCutForHT) rgnHT += et;
+    if(rgnHT > 0xFFFF) rgnHT = 0xFFFF;
   }
   for(iHFRgn = 0; iHFRgn < NCrts * NHFRgns; iHFRgn++) {
     j = (iHFRgn % (NHFRgns));
     et = hfETLUT[hfET[iHFRgn]][j];
-    if(et > MinHFETCutForHT) HT += et;
+    if(et > MinHFETCutForHT) hfHT += et;
+    if(hfHT > 0xFFFF) hfHT = 0xFFFF;
   }
+  sum = rgnHT + hfHT;
+  if(sum > 0xFFFF) sum = 0xFFFF;
+  HT[0] = (uint16_t) sum;
+  HT[1] = (uint16_t) rgnHT;
+  HT[2] = (uint16_t) hfHT;
 
   // Determine HT using hardware simulation
 
@@ -115,8 +106,10 @@ int main(int argc, char **argv) {
 
   // Compare
 
-  printf("C says: HT = %d; HLS says: HT = %d\n", HT, hlsHT[0]);;
-  if(HT != hlsHT[0]) {
+  printf("C says: HT = %d; HLS says: HT = %d\n", HT[0], hlsHT[0]);
+  printf("C says: rgnHT = %d; HLS says: rgnHT = %d\n", HT[1], hlsHT[1]);
+  printf("C says: hfHT = %d; HLS says: hfHT = %d\n", HT[2], hlsHT[2]);
+  if(HT[0] != hlsHT[0]) {
     printf("Test failed\n");
     return 1;
   }
