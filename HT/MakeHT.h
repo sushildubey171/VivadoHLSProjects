@@ -12,13 +12,13 @@
 #include <stdint.h>
 #ifdef Vivado
 #include "ap_int.h"
-#define uint10_t ap_uint<10>
+#define uint12_t ap_uint<12>
 #else
-#define uint10_t uint16_t
+#define uint12_t uint16_t
 #endif
 
 #include "LUTs.h"
 
-void MakeHT(uint10_t rgnET[NCrts*NCrds*NRgns], uint10_t hfET[NCrts*NHFRgns], uint10_t HT[1]);
+void MakeHT(uint12_t rgnET[NCrts*NCrds*NRgns], uint12_t hfET[NCrts*NHFRgns], uint12_t HT[1]);
 
 #endif
